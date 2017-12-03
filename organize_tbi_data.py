@@ -76,10 +76,10 @@ iph_nii_path = "/users/ipan/scratch/tbi_data/orig/iph/ct/nii/"
 cont_dicom_path = "/users/ipan/scratch/ProTECT_3D/cont/baseline/"
 cont_nii_path = "/users/ipan/scratch/tbi_data/orig/cont/ct/nii/"
 
-# get_NIfTI_files_from_DICOM(edh_dicom_path, edh_nii_path)
-# get_NIfTI_files_from_DICOM(sdh_dicom_path, sdh_nii_path)
-# get_NIfTI_files_from_DICOM(iph_dicom_path, iph_nii_path)
-# get_NIfTI_files_from_DICOM(cont_dicom_path, cont_nii_path)
+get_NIfTI_files_from_DICOM(edh_dicom_path, edh_nii_path)
+get_NIfTI_files_from_DICOM(sdh_dicom_path, sdh_nii_path)
+get_NIfTI_files_from_DICOM(iph_dicom_path, iph_nii_path)
+get_NIfTI_files_from_DICOM(cont_dicom_path, cont_nii_path)
 # Ignore 493 in contusions
 
 # ===== STEP 2 ===== #
@@ -165,18 +165,18 @@ iph_gt_dir = "/users/ipan/scratch/tbi_data/slicer/iph/gt/nii/"
 cont_ct_dir = "/users/ipan/scratch/tbi_data/slicer/cont/ct/nii/"
 cont_gt_dir = "/users/ipan/scratch/tbi_data/slicer/cont/gt/nii/"
 
-# get_NIfTI_from_NRRD(edh_nii_path, edh_dicom_path, edh_ct_dir, edh_gt_dir)
-# # 948 in SDH doesn't have the CT data NRRD file
-# # So I will manually verify that the NIfTI correponds to the ground truth
-# get_NIfTI_from_NRRD(sdh_nii_path, sdh_dicom_path, sdh_ct_dir, sdh_gt_dir)
-# get_NIfTI_from_NRRD(iph_nii_path, iph_dicom_path, iph_ct_dir, iph_gt_dir)
-# # Manually do 1100 in contusions
-# # Actually the CT data for 1100 is messed up - should probably leave it out  
-# # Manually do 1234, 1257, 1265, 803, 847, 918
-# # Check 194 - min HU is 0 
-# # -- Remove the random label file with a bunch of numbers that has all zeros
-# get_NIfTI_from_NRRD(cont_nii_path, cont_dicom_path, cont_ct_dir, cont_gt_dir,
-#     cont=True)
+get_NIfTI_from_NRRD(edh_nii_path, edh_dicom_path, edh_ct_dir, edh_gt_dir)
+# 948 in SDH doesn't have the CT data NRRD file
+# So I will manually verify that the NIfTI correponds to the ground truth
+get_NIfTI_from_NRRD(sdh_nii_path, sdh_dicom_path, sdh_ct_dir, sdh_gt_dir)
+get_NIfTI_from_NRRD(iph_nii_path, iph_dicom_path, iph_ct_dir, iph_gt_dir)
+# Manually do 1100 in contusions
+# Actually the CT data for 1100 is messed up - should probably leave it out  
+# Manually do 1234, 1257, 1265, 803, 847, 918
+# Check 194 - min HU is 0 
+# -- Remove the random label file with a bunch of numbers that has all zeros
+get_NIfTI_from_NRRD(cont_nii_path, cont_dicom_path, cont_ct_dir, cont_gt_dir,
+    cont=True)
 
 # Code to do it manually
 # Make sure you check the orientation first so you can correct it
@@ -185,24 +185,24 @@ cont_gt_dir = "/users/ipan/scratch/tbi_data/slicer/cont/gt/nii/"
 scp ipan@transfer.ccv.brown.edu:/users/ipan/scratch/tbi_data/orig/cont/gt/nii/918/918.nii.gz 918_seg.nii.gz
 scp ipan@transfer.ccv.brown.edu:/users/ipan/scratch/tbi_data/orig/cont/ct/nii/918/918.nii.gz .
 """
-# import numpy as np, nibabel as nib 
-# cont = True 
-# x = nib.load("918.nii.gz")
-# y = nib.load("918_seg.nii.gz")
-# xarr = x.get_data() ; yarr = y.get_data() 
-# if cont: yarr[xarr < 35] = 0 
+import numpy as np, nibabel as nib 
+cont = True 
+x = nib.load("918.nii.gz")
+y = nib.load("918_seg.nii.gz")
+xarr = x.get_data() ; yarr = y.get_data() 
+if cont: yarr[xarr < 35] = 0 
 
-# yarr[yarr > 0] = 1 
-# for _ in range(xarr.shape[2]): xarr[:,:,_] = np.rot90(xarr[:,:,_], k=2)
+yarr[yarr > 0] = 1 
+for _ in range(xarr.shape[2]): xarr[:,:,_] = np.rot90(xarr[:,:,_], k=2)
 
-# for _ in range(yarr.shape[2]): yarr[:,:,_] = np.rot90(yarr[:,:,_], k=2) 
+for _ in range(yarr.shape[2]): yarr[:,:,_] = np.rot90(yarr[:,:,_], k=2) 
 
-# xnib = nib.Nifti1Image(xarr.astype("int16"), np.diag((1,1,1,1)))
-# ynib = nib.Nifti1Image(yarr, np.diag((1,1,1,1)))
-# xnib.header["pixdim"] = x.header["pixdim"]
-# ynib.header["pixdim"] = y.header["pixdim"]
-# nib.save(xnib, "918.nii.gz")
-# nib.save(ynib, "918_seg.nii.gz") 
+xnib = nib.Nifti1Image(xarr.astype("int16"), np.diag((1,1,1,1)))
+ynib = nib.Nifti1Image(yarr, np.diag((1,1,1,1)))
+xnib.header["pixdim"] = x.header["pixdim"]
+ynib.header["pixdim"] = y.header["pixdim"]
+nib.save(xnib, "918.nii.gz")
+nib.save(ynib, "918_seg.nii.gz") 
 """
 scp 918_seg.nii.gz ipan@transfer.ccv.brown.edu:/users/ipan/scratch/tbi_data/slicer/cont/gt/nii/918.nii.gz
 scp 918.nii.gz ipan@transfer.ccv.brown.edu:/users/ipan/scratch/tbi_data/slicer/cont/ct/nii/918.nii.gz
@@ -236,14 +236,14 @@ iph_seg_path = "/users/ipan/scratch/tbi_data/orig/iph/gt/dicom/"
 cont_dicom_path = "/users/ipan/scratch/ProTECT_3D/cont/baseline/"
 cont_seg_path = "/users/ipan/scratch/tbi_data/orig/cont/gt/dicom/"
 
-# get_DICOM_segmentations(edh_dicom_path, edh_seg_path)
-# get_DICOM_segmentations(sdh_dicom_path, sdh_seg_path)
-# get_DICOM_segmentations(iph_dicom_path, iph_seg_path)
-# # 667 had errors 
-# get_DICOM_segmentations(cont_dicom_path, cont_seg_path)
-# # 1055, 1165, 1254, 766, 840 missing segmentation
-# # 161 has errors
-# # Ignore 493 in contusions
+get_DICOM_segmentations(edh_dicom_path, edh_seg_path)
+get_DICOM_segmentations(sdh_dicom_path, sdh_seg_path)
+get_DICOM_segmentations(iph_dicom_path, iph_seg_path)
+# 667 had errors 
+get_DICOM_segmentations(cont_dicom_path, cont_seg_path)
+# 1055, 1165, 1254, 766, 840 missing segmentation
+# 161 has errors
+# Ignore 493 in contusions
 
 # ===== STEP 3 ===== #
 # Convert DICOM segmentations to NIfTI
@@ -277,10 +277,10 @@ iph_nii_path = "/users/ipan/scratch/tbi_data/orig/iph/gt/nii/"
 cont_seg_path = "/users/ipan/scratch/tbi_data/orig/cont/gt/dicom/"
 cont_nii_path = "/users/ipan/scratch/tbi_data/orig/cont/gt/nii/"
 
-# get_NIfTI_segmentations(edh_seg_path, edh_nii_path)
-# get_NIfTI_segmentations(sdh_seg_path, sdh_nii_path)
-# get_NIfTI_segmentations(iph_seg_path, iph_nii_path)
-# get_NIfTI_segmentations(cont_seg_path, cont_nii_path)
+get_NIfTI_segmentations(edh_seg_path, edh_nii_path)
+get_NIfTI_segmentations(sdh_seg_path, sdh_nii_path)
+get_NIfTI_segmentations(iph_seg_path, iph_nii_path)
+get_NIfTI_segmentations(cont_seg_path, cont_nii_path)
 
 #############
 # NEGATIVES #
@@ -288,19 +288,15 @@ cont_nii_path = "/users/ipan/scratch/tbi_data/orig/cont/gt/nii/"
 # Convert DICOM files to NIfTI, preserving directory structure.
 #
 
-
-# def convert_DICOM_to_NIfTI(ddir, outdir, filename=None):
-
-neg_dicom_path = "/gpfs/data/dmerck/tbi_data/orig/neg_dicom"
+neg_dicom_path = "/gpfs/data/dmerck/tbi_data/orig/neg/dicom"
 neg_nii_path = "/gpfs/data/dmerck/tbi_data/orig/neg/nii"
 
 def batch_DICOM_to_NIfTI(dicom_path, nii_path, tilt=False):
-	DICOM_directories = [directory for directory in os.listdir(dicom_path)]
-	for DICOM_directory in DICOM_directories:
-		NIfTI_directory = neg_nii_path + "/" + DICOM_directory.split("/")[-1]
-		if not os.exists.path(NIfTI_directory):
-			os.mkdir(NIfTI_directory)
-		convert_DICOM_to_NIfTI(DICOM_directory, NIfTI_directory)
-		
+    DICOM_directories = [dicom_path+"/"+directory for directory in os.listdir(dicom_path)]
+    for DICOM_directory in DICOM_directories:
+        NIfTI_directory = neg_nii_path + "/" + DICOM_directory.split("/")[-1]
+        if not os.path.exists(NIfTI_directory):
+            os.mkdir(NIfTI_directory)
+        convert_DICOM_to_NIfTI(DICOM_directory, NIfTI_directory)
 
-
+# batch_DICOM_to_NIfTI(neg_dicom_path, neg_nii_path)
