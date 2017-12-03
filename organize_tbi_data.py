@@ -285,5 +285,22 @@ get_NIfTI_segmentations(cont_seg_path, cont_nii_path)
 #############
 # NEGATIVES #
 #############
+# Convert DICOM files to NIfTI, preserving directory structure.
+#
+
+
+# def convert_DICOM_to_NIfTI(ddir, outdir, filename=None):
+
+neg_dicom_path = "/gpfs/data/dmerck/tbi_data/orig/neg_dicom"
+neg_nii_path = "/gpfs/data/dmerck/tbi_data/orig/neg/nii"
+
+def batch_DICOM_to_NIfTI(dicom_path, nii_path, tilt=False):
+	DICOM_directories = [directory for directory in os.listdir(dicom_path)]
+	for DICOM_directory in DICOM_directories:
+		NIfTI_directory = neg_nii_path + "/" + DICOM_directory.split("/")[-1]
+		if not os.exists.path(NIfTI_directory):
+			os.mkdir(NIfTI_directory)
+		convert_DICOM_to_NIfTI(DICOM_directory, NIfTI_directory)
+		
 
 
